@@ -6,7 +6,7 @@
 */
 void initDB()
 {
-	if (!DBStatus::dealInitMySQLError(InitMySQL::initGlobleMySQL("cdb-j6k4d9vs.bj.tencentcdb.com", "user", "asdf3485", "tourism-recommend-sys-trafficimfor", 10255, "gbk")))
+	if (!DBStatus::dealInitMySQLError(InitMySQL::initGlobleMySQL("127.0.0.1", "root", "hong456..", "tourism-recommend-sys-trafficimfor", 3306, "gbk")))
 	{
 		throw MyException(1,"INIT_MYSQL_DATABASE_FAILED","初始化数据库错误");
 	}

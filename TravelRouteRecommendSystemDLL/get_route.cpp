@@ -36,11 +36,34 @@ namespace
 			);
 		}
 	}
+
+	//是否已存在该火车ID但是顺序不同的 例如G1663/G1662 和 G1662/G1663
+	template<class T>
+	bool exsitingCarIdButDifferentSequence(string car_id, const unordered_map<string, T>& dictionary)
+	{
+		int index_of_diagonal = car_id.find('/');
+		if (index_of_diagonal != string::npos)
+		{
+			string car_id_first = car_id.substr(0, index_of_diagonal);
+			string car_id_second = car_id.substr(index_of_diagonal + 1, car_id.length() - index_of_diagonal - 1);
+			car_id_second.append("/").append(car_id_first);
+			if (dictionary.find(car_id_second) != dictionary.end())//如果例如G1663/G1662和G1662/G1663实际上是一样的
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	//往FirstRouteDivideById中判断优先级并且添加键值对 适用于火车
 	void addKeyValueOfFirstRouteDivideByIdHSRC(string start_city,unordered_map<string, Vehicle*>& first_route_divede_by_id, const MYSQL_ROW& row)
 	{
 		string start_city_name_of_second = row[9];
 		if (start_city_name_of_second ==start_city)//同一个城市站点 就不要转了！
+		{
+			return;
+		}
+		if (exsitingCarIdButDifferentSequence<Vehicle*>(row[0], first_route_divede_by_id))
 		{
 			return;
 		}
@@ -278,6 +301,7 @@ GetRouteNameSpace::GetDirectVehicleStatue GetRoute::getDirectVehicleInfor(int no
 		row = mysql_fetch_row(res);
 		vector<Vehicle*> vehicle(1);
 		vector<vector<Vehicle*>> temp_weights = vector<vector<Vehicle*>>(rows_count>15?15:rows_count, vector<Vehicle*>(1));
+		unordered_map<string, int> car_id_dictionary;//防止G1662/G1663和G1663/G1662这样的数据同时出现
 		int j = 0;
 		while (row != NULL)
 		{
@@ -291,6 +315,14 @@ GetRouteNameSpace::GetDirectVehicleStatue GetRoute::getDirectVehicleInfor(int no
 				);
 				break;
 			case UserRequirementNamespace::HSRC:
+				car_id_dictionary[row[0]] = 1;
+				if (exsitingCarIdButDifferentSequence<int>(row[0], car_id_dictionary))
+				{
+					car_id_dictionary.erase(row[0]);
+					temp_weights.resize(--rows_count);
+					row = mysql_fetch_row(res);
+					continue;
+				}
 				vehicle[0]=new HSRC
 				(
 					row[0], row[1], row[2], row[3], row[4], row[5],
@@ -301,6 +333,14 @@ GetRouteNameSpace::GetDirectVehicleStatue GetRoute::getDirectVehicleInfor(int no
 			case UserRequirementNamespace::ALL_VEHICLE:
 				if (sql_query[i].find("火车") != string::npos)
 				{
+					car_id_dictionary[row[0]] = 1;
+					if (exsitingCarIdButDifferentSequence<int>(row[0], car_id_dictionary))
+					{
+						car_id_dictionary.erase(row[0]);
+						temp_weights.resize(--rows_count);
+						row = mysql_fetch_row(res);
+						continue;
+					}
 					vehicle[0] = new HSRC
 					(
 						row[0], row[1], row[2], row[3], row[4], row[5],

@@ -166,11 +166,11 @@ namespace GetRouteNameSpace
 		{
 			if (route1.size() == 1)
 			{
-				time1 -= time1 / 8;
+				time1 -= time1 / 6;
 			}
 			if (route2.size() == 1)
 			{
-				time2 -= time2 / 8;
+				time2 -= time2 / 6;
 			}
 		}
 
@@ -199,11 +199,11 @@ namespace GetRouteNameSpace
 		{
 			if (route1.size() == 1)
 			{
-				time1 -= time1 / 8;
+				time1 -= time1 / 6;
 			}
 			if (route2.size() == 1)
 			{
-				time2 -= time2 / 8;
+				time2 -= time2 / 6;
 			}
 		}
 
@@ -232,11 +232,11 @@ namespace GetRouteNameSpace
 		{
 			if (route1.size() == 1)
 			{
-				time1 -= time1 / 8;
+				time1 -= time1 / 6;
 			}
 			if (route2.size() == 1)
 			{
-				time2 -= time2 / 8;
+				time2 -= time2 / 6;
 			}
 		}
 		int start_time_hour1 = MyTime::stringToMyTime(route1[0]->get_start_time(), HH_MM).hour;
